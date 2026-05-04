@@ -152,7 +152,9 @@ fetch(sheetURL)
       document.getElementById("name").innerText = name;
 
       document.getElementById("whatsapp").href =
-        "https://wa.me/" + phone;
+        let fixedPhone = phone.replace(/^0/, "962");
+document.getElementById("whatsapp").href =
+"https://wa.me/" + fixedPhone;
 
       document.getElementById("call").href =
         "tel:" + phone;
