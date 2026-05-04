@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact</title>
+</head>
+
+<body style="text-align:center; font-family:sans-serif; padding-top:50px;">
+
+<h2 id="name">Loading...</h2>
+
+<a id="whatsapp" target="_blank">
+  <button style="padding:12px 25px; margin:5px;">📲 WhatsApp</button>
+</a>
+
+<br><br>
+
+<a id="call">
+  <button style="padding:12px 25px; margin:5px;">📞 Call</button>
+</a>
+
+<script>
+const sheetURL = https://docs.google.com/spreadsheets/d/e/2PACX-1vQFS2UTok3vPtOJvoo0OQ2BhRf_OJ_7pLHNcMvvzyfF3GjSajmavnyR9yxqVFHuLZdBz6z-lejcyJcM/pub?output=csv
+
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+fetch(sheetURL)
+  .then(res => res.text())
+  .then(csv => {
+    const rows = csv.split("\n").slice(1);
+
+    let found = false;
+
+    rows.forEach(row => {
+      const cols = row.split(",");
+
+      if(cols[0] === id){
+        found = true;
+
+        const name = cols[1];
+        const phone = cols[2];
+        const active = cols[3];
+
+        if(active !== "YES"){
+          document.body.innerHTML = "<h2>⚠️ الكود غير مفعّل</h2>";
+          return;
+        }
+
+        document.getElementById("name").innerText = name;
+
+        document.getElementById("whatsapp").href =
+          "https://wa.me/962" + phone.substring(1);
+
+        document.getElementById("call").href =
+          "tel:" + phone;
+      }
+    });
+
+    if(!found){
+      document.body.innerHTML = "<h2>❌ كود غير موجود</h2>";
+    }
+  });
+</script>
+
+</body>
+</html>
