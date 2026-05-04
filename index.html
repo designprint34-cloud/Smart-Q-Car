@@ -1,76 +1,162 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contact</title>
-</head>
+<title>Smart QR Contact</title>
 
 <style>
 body {
-  background: linear-gradient(to bottom, #111, #333);
+  margin: 0;
+  font-family: Arial;
+  background: linear-gradient(135deg, #1f1f1f, #3a3a3a);
   color: white;
+  text-align: center;
 }
-button {
+
+/* كرت رئيسي */
+.card {
+  margin-top: 80px;
+  background: #2b2b2b;
+  border-radius: 20px;
+  padding: 30px;
+  width: 85%;
+  max-width: 350px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* صورة */
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #444;
+  margin: auto;
+  margin-bottom: 15px;
+}
+
+/* الاسم */
+#name {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+/* أزرار */
+.btn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  margin: 10px 0;
   border-radius: 12px;
   border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* واتساب */
+.whatsapp {
   background: #25D366;
   color: white;
-  font-size: 16px;
+}
+
+/* اتصال */
+.call {
+  background: #007BFF;
+  color: white;
+}
+
+/* موقع */
+.map {
+  background: #ff9800;
+  color: white;
+}
+
+.footer {
+  margin-top: 15px;
+  font-size: 12px;
+  opacity: 0.6;
 }
 </style>
-<h2 id="name" style="font-size:28px;">...</h2>
+
+</head>
+
+<body>
+
+<div class="card">
   
-<a id="whatsapp" target="_blank">
-  <button style="padding:12px 25px; margin:5px;">📲 WhatsApp</button>
-</a>
+  <div class="avatar"></div>
 
-<br><br>
+  <h2 id="name">Loading...</h2>
 
-<a id="call">
-  <button style="padding:12px 25px; margin:5px;">📞 Call</button>
-</a>
+  <a id="whatsapp" target="_blank">
+    <button class="btn whatsapp">WhatsApp</button>
+  </a>
+
+  <a id="call">
+    <button class="btn call">Call</button>
+  </a>
+
+  <a id="map" target="_blank">
+    <button class="btn map">Location</button>
+  </a>
+
+  <div class="footer">Smart QR Car</div>
+
+</div>
 
 <script>
+
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQFS2UTok3vPtOJvoo0OQ2BhRf_OJ_7pLHNcMvvzyfF3GjSajmavnyR9yxqVFHuLZdBz6z-lejcyJcM/pub?output=csv"
+
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
 fetch(sheetURL)
-  .then(res => res.text())
-  .then(csv => {
-    const rows = csv.split("\n").slice(1);
+.then(res => res.text())
+.then(csv => {
 
-    let found = false;
+  const rows = csv.split("\n").slice(1);
 
-    rows.forEach(row => {
-      const cols = row.split(",").map(c => c.trim());
+  let found = false;
 
-      if(cols[0].trim() == id){
-        found = true;
+  rows.forEach(row => {
+    const cols = row.split(",");
 
-        const name = cols[1];
-        const phone = cols[2];
-        const active = cols[3];
+    if(cols[0] == id){
 
-        if(active !== "YES"){
-          document.body.innerHTML = "<h2>⚠️ الكود غير مفعّل</h2>";
-          return;
-        }
+      found = true;
 
-        document.getElementById("name").innerText = name;
+      const name = cols[1];
+      const phone = cols[2];
+      const active = cols[3];
 
-        document.getElementById("whatsapp").href =
-          "https://wa.me/962" + phone.substring(1);
-
-        document.getElementById("call").href =
-          "tel:" + phone;
+      if(active !== "YES"){
+        document.body.innerHTML = "<h2>❌ غير مفعل</h2>";
+        return;
       }
-    });
 
-    if(!found){
-      document.body.innerHTML = "<h2>❌ كود غير موجود</h2>";
+      document.getElementById("name").innerText = name;
+
+      document.getElementById("whatsapp").href =
+        "https://wa.me/962" + phone;
+
+      document.getElementById("call").href =
+        "tel:" + phone;
+
+      document.getElementById("map").href =
+        "https://www.google.com/maps";
+
     }
+
   });
+
+  if(!found){
+    document.body.innerHTML = "<h2>❌ غير موجود</h2>";
+  }
+
+});
+
 </script>
 
 </body>
