@@ -2,41 +2,64 @@
 <html lang="ar">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart QR Contact</title>
+<title>Smart QR Car</title>
 
 <style>
 body {
   margin: 0;
   font-family: Arial;
-  background: linear-gradient(135deg, #1f1f1f, #3a3a3a);
+  background: linear-gradient(135deg, #0f0f0f, #2c2c2c);
   color: white;
   text-align: center;
 }
 
-/* كرت رئيسي */
+/* لودينغ */
+.loader {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.spinner {
+  border: 5px solid #333;
+  border-top: 5px solid #25D366;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+/* كرت */
 .card {
+  display: none;
   margin-top: 80px;
-  background: #2b2b2b;
+  background: #1f1f1f;
   border-radius: 20px;
   padding: 30px;
   width: 85%;
   max-width: 350px;
   margin-left: auto;
   margin-right: auto;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-/* صورة */
-.avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: #444;
-  margin: auto;
-  margin-bottom: 15px;
+/* لوجو */
+.logo {
+  font-size: 14px;
+  opacity: 0.7;
+  margin-bottom: 10px;
 }
 
-/* الاسم */
+/* اسم */
 #name {
   font-size: 24px;
   margin-bottom: 20px;
@@ -54,52 +77,49 @@ body {
   cursor: pointer;
 }
 
-/* واتساب */
 .whatsapp {
   background: #25D366;
   color: white;
 }
 
-/* اتصال */
 .call {
   background: #007BFF;
   color: white;
 }
 
-.footer {
-  margin-top: 15px;
-  font-size: 12px;
-  opacity: 0.6;
+/* حماية بسيطة */
+body {
+  -webkit-user-select: none;
+  user-select: none;
 }
 </style>
-
 </head>
 
-<body>
+<body oncontextmenu="return false">
 
-<div class="card">
-  
-  <div class="avatar"></div>
+<div class="loader" id="loader">
+  <div class="spinner"></div>
+</div>
 
-  <h2 id="name">Loading...</h2>
+<div class="card" id="card">
+
+  <div class="logo">Smart QR Car</div>
+
+  <h2 id="name">...</h2>
 
   <a id="whatsapp" target="_blank">
-    <button class="btn whatsapp">WhatsApp</button>
+    <button class="btn whatsapp">📲 WhatsApp</button>
   </a>
 
   <a id="call">
-    <button class="btn call">Call</button>
+    <button class="btn call">📞 Call</button>
   </a>
-
- 
-
-  <div class="footer">Smart QR Car</div>
 
 </div>
 
 <script>
 
-const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQFS2UTok3vPtOJvoo0OQ2BhRf_OJ_7pLHNcMvvzyfF3GjSajmavnyR9yxqVFHuLZdBz6z-lejcyJcM/pub?output=csv"
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQFS2UTok3vPtOJvoo0OQ2BhRf_OJ_7pLHNcMvvzyfF3GjSajmavnyR9yxqVFHuLZdBz6z-lejcyJcM/pubhtml";
 
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
@@ -109,11 +129,10 @@ fetch(sheetURL)
 .then(csv => {
 
   const rows = csv.split("\n").slice(1);
-
   let found = false;
 
   rows.forEach(row => {
-    const cols = row.split(",");
+    const cols = row.split(",").map(c => c.trim());
 
     if(cols[0] == id){
 
@@ -131,13 +150,13 @@ fetch(sheetURL)
       document.getElementById("name").innerText = name;
 
       document.getElementById("whatsapp").href =
-        "https://wa.me/962" + phone;
+        "https://wa.me/" + phone;
 
       document.getElementById("call").href =
         "tel:" + phone;
 
-      document.getElementById("map").href =
-        "https://www.google.com/maps";
+      // 📊 تتبع الضغطات (بسيط)
+      fetch("https://api.countapi.xyz/hit/smartqcar/" + id);
 
     }
 
@@ -145,7 +164,12 @@ fetch(sheetURL)
 
   if(!found){
     document.body.innerHTML = "<h2>❌ غير موجود</h2>";
+    return;
   }
+
+  // إخفاء اللودينغ وإظهار الكرت
+  document.getElementById("loader").style.display = "none";
+  document.getElementById("card").style.display = "block";
 
 });
 
