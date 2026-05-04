@@ -130,14 +130,20 @@ fetch(sheetURL)
 
       document.getElementById("name").innerText = name;
 
-      document.getElementById("whatsapp").href =
-        "https://wa.me/962" + phone;
+      let cleanPhone = phone.replace(/\D/g, '');
+
+if(cleanPhone.startsWith("0")){
+  cleanPhone = cleanPhone.substring(1);
+}
+if(cleanPhone.startsWith("962")){
+  cleanPhone = cleanPhone.substring(3);
+}
+
+document.getElementById("whatsapp").href =
+  "https://wa.me/962" + cleanPhone;
 
       document.getElementById("call").href =
         "tel:" + phone;
-
-      document.getElementById("map").href =
-        "https://www.google.com/maps";
 
     }
 
