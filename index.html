@@ -136,7 +136,7 @@ fetch(sheetURL)
   rows.forEach(row => {
     const cols = row.split(",").map(c => c.trim());
 
-    if(cols[0] == id){
+    if(cols[0].trim() === id.trim()){
 
       found = true;
 
