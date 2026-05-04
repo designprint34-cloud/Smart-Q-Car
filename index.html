@@ -32,9 +32,9 @@ fetch(sheetURL)
     let found = false;
 
     rows.forEach(row => {
-      const cols = row.split(",");
+      const cols = row.split(",").map(c => c.trim());
 
-      if(cols[0] === id){
+      if(cols[0].trim() == id){
         found = true;
 
         const name = cols[1];
